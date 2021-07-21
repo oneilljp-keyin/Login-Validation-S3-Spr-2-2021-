@@ -9,6 +9,7 @@ router.get("/", (req, res) => {
 
 // Welcome Page
 router.get("/success", (req, res) => {
+  req.session.destroy();
   res.render("logout");
 });
 

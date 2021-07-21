@@ -1,5 +1,8 @@
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
+const session = require("express-session");
+
+const BinarySearchTree = require("binary-search-tree").BinarySearchTree;
 
 const pool = require("./db");
 
@@ -11,7 +14,7 @@ module.exports = function (passport) {
         try {
           // Check if user exists (through error if false)
           const user = await pool.query(
-            "SELECT * FROM users WHERE user_email = $1",
+            "SELECT users.*, user_roles.role_name FROM users JOIN user_roles using (role_id) WHERE user_email = $1",
             [email.toLowerCase()]
           );
           if (user.rows.length === 0) {
@@ -30,6 +33,22 @@ module.exports = function (passport) {
               message: "Incorrect Email or Password",
             });
           } else {
+            session.loggedIn = true;
+
+            const bst_routes = new BinarySearchTree();
+
+            const user_routes = await pool.query(
+              "SELECT * FROM roles_and_routes \
+               WHERE role_name = $1;",
+              [user.rows[0].role_name]
+            );
+
+            user_routes.rows.forEach((route) => {
+              bst_routes.insert(parseInt(route.route_id), route.route_name);
+            });
+
+            session.routes = bst_routes;
+
             return done(null, user.rows[0]);
           }
         } catch (err) {

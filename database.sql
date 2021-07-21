@@ -12,12 +12,10 @@ CREATE TABLE users(
   user_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_name VARCHAR(255) NOT NULL,
   user_email VARCHAR(255) NOT NULL,
-  user_password VARCHAR(255) NOT NULL
+  user_password VARCHAR(255) NOT NULL,
+  role_id INT NOT NULL,
+  CONSTRAINT fk_rbac_name FOREIGN KEY(role_id) REFERENCES user_roles(role_id);
 );
---
--- insert admin user
-INSERT INTO users (user_name, user_email, user_password, rbac)
-VALUES ('admin', 'admin@here.com', 'admin', 1);
 --
 -- create table for roles
 CREATE TABLE user_roles (
@@ -48,6 +46,9 @@ VALUES (
     CURRENT_TIMESTAMP
   );
 --
+-- Set correct auto increment
+ALTER SEQUENCE user_roles_role_id_seq RESTART WITH 4;
+--
 -- Create table for site routes
 CREATE TABLE site_routes (
   route_id SERIAL PRIMARY KEY,
@@ -60,9 +61,12 @@ CREATE TABLE site_routes (
 INSERT INTO site_routes (route_id, route_name, last_updated)
 VALUES (1, '/profile', CURRENT_TIMESTAMP),
   (2, '/admin/newrole', CURRENT_TIMESTAMP),
-  (3, '/example', CURRENT_TIMESTAMP),
-  (4, '/example_two', CURRENT_TIMESTAMP),
-  (5, '/secret', CURRENT_TIMESTAMP);
+  (3, '/example/one', CURRENT_TIMESTAMP),
+  (4, '/example/two', CURRENT_TIMESTAMP),
+  (5, '/example/three', CURRENT_TIMESTAMP),
+  --
+  -- Set correct auto increment
+  ALTER SEQUENCE site_routes_route_id_seq RESTART WITH 6;
 --
 -- Create table for RBAC
 CREATE TABLE rbac (
@@ -85,12 +89,15 @@ VALUES (1, 1),
   (2, 3),
   (2, 4),
   (3, 1),
-  (3, 2);
+  (3, 3);
 --
+ALTER SEQUENCE rbac_rbac_id_seq RESTART WITH 11;
 -- Create view for which roles have access to which ROUTINES
 CREATE OR REPLACE VIEW roles_and_routes AS
-SELECT ur.role_name,
-  sr.route_name
+SELECT ur.role_id,
+  ur.role_name,
+  sr.route_name,
+  sr.route_id
 FROM rbac
   JOIN user_roles ur USING (role_id)
   JOIN site_routes sr USING (route_id);

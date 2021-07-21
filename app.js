@@ -15,8 +15,6 @@ require("dotenv").config();
 // Middleware
 // -- BodyParser
 app.use(express.urlencoded({ extended: false }));
-// app.use(express.json()); //req.body
-// app.use(cors());
 
 // Express Session
 app.use(
@@ -54,10 +52,10 @@ app.use("/", require("./routes/index"));
 app.use("/signup", require("./routes/signup"));
 app.use("/signin", require("./routes/signin"));
 app.use("/logout", require("./routes/logout"));
-app.use("/profile", require("./routes/profile"));
-app.use("/admin", require("./routes/admin"));
-app.use("/example", require("./routes/example"));
-app.use("/secret", require("./routes/secret"));
+app.use("/profile", require("./routes/profile")); // route_id: 1
+app.use("/admin", require("./routes/admin")); // route_id: 2
+app.use("/example", require("./routes/example")); // route_id: 3 & 4
+app.use("/secret", require("./routes/secret")); // route_id: 5
 
 const PORT = process.env.PORT || 5000;
 
