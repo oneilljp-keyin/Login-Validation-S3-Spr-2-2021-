@@ -33,13 +33,15 @@ module.exports = function (passport) {
               message: "Incorrect Email or Password",
             });
           } else {
-            session.loggedIn = true;
+            const updateLastLogin = await pool.query(
+              "UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE user_id = $1 RETURNING last_login",
+              [user.rows[0].user_id]
+            );
 
             const bst_routes = new BinarySearchTree();
 
             const user_routes = await pool.query(
-              "SELECT * FROM roles_and_routes \
-               WHERE role_name = $1;",
+              "SELECT * FROM roles_and_routes WHERE role_name = $1;",
               [user.rows[0].role_name]
             );
 

@@ -1,0 +1,18 @@
+<div class="row mt-5">
+  <div class="col-md-6 m-auto">
+    <div class="card card-body card-shadow">
+      <h1 class="mt-4">
+        <%= title %>
+      </h1>
+      <%- include ("./partials/messages"); %>
+      <p class="lead mb-3">Welcome <%= name %> (<%= email %>)</p>
+      <% if( lastLogin !='' ) { %>
+        <p>Last Login:
+          <%= lastLogin %>
+        </p>
+      <% } %>
+      <a href="/logout" class="btn btn-secondary">Logout</a>
+      <%- include ("./partials/links"); %>
+    </div>
+  </div>
+</div>

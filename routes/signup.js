@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
-const passport = require("passport");
 
 const pool = require("../config/db");
 
@@ -11,11 +10,11 @@ router.get("/", (req, res) => {
 
 // Sign-Up Handle
 router.post("/", async (req, res) => {
-  const { name, email, password, password2 } = req.body;
+  const { name, email, password, password2, role_id } = req.body;
   let errors = [];
 
   // Check requried fields
-  if (!name || !email || !password || !password2) {
+  if (!name || !email || !password || !password2 || !role_id) {
     errors.push({ msg: "Please Fill In All Fields" });
   }
 
@@ -26,7 +25,12 @@ router.post("/", async (req, res) => {
 
   // Check passwords length
   if (password.length < 6) {
-    errors.push({ msg: "Please Needs To Be At Least 6 Characters" });
+    errors.push({ msg: "Password Needs To Be At Least 6 Characters" });
+  }
+
+  // Check if security level is selected
+  if (role_id == 0) {
+    errors.push({ msg: "Please Select Security Level" });
   }
 
   if (errors.length > 0) {
@@ -36,13 +40,14 @@ router.post("/", async (req, res) => {
       email,
       password,
       password2,
+      role_id,
     });
   } else {
     // when validation passes, send info to database
     // first check if user exists, which will return an error
     // or insert new user if no error
     const user = await pool.query("SELECT * FROM users WHERE user_email = $1", [
-      email,
+      email.toLowerCase(),
     ]);
 
     if (user.rows.length !== 0) {
@@ -53,6 +58,7 @@ router.post("/", async (req, res) => {
         email,
         password,
         password2,
+        role_id,
       });
     } else {
       // Bcrypt the user password
@@ -62,8 +68,8 @@ router.post("/", async (req, res) => {
 
       // Enter the new user into the database
       const newUser = await pool.query(
-        "INSERT INTO users (user_name, user_email, user_password) VALUES ($1, $2, $3) RETURNING *",
-        [name, email.toLowerCase(), bcryptPassword]
+        "INSERT INTO users (user_name, user_email, user_password, role_id) VALUES ($1, $2, $3, $4) RETURNING *",
+        [name, email.toLowerCase(), bcryptPassword, role_id]
       );
 
       req.flash(

@@ -14,6 +14,8 @@ CREATE TABLE users(
   user_email VARCHAR(255) NOT NULL,
   user_password VARCHAR(255) NOT NULL,
   role_id INT NOT NULL,
+  created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_login TIMESTAMP,
   CONSTRAINT fk_rbac_name FOREIGN KEY(role_id) REFERENCES user_roles(role_id);
 );
 --
