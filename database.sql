@@ -4,8 +4,7 @@ CREATE USER sprint2_user WITH ENCRYPTED PASSWORD '2021-july-13';
 GRANT ALL PRIVILEGES ON DATABASE sprint2 TO sprint2_user;
 --
 -- Set extension for uuid
--- enter the following in the psql command line or pgadmin query window (without single quotes)
---   'create extension if not exists "uuid-ossp";'
+CREATE extension IF NOT EXISTS "uuid-ossp";
 --
 -- Create table to store user info
 CREATE TABLE users(
