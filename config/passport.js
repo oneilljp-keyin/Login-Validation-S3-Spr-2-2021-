@@ -2,7 +2,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
 
-const BinarySearchTree = require("binary-search-tree").BinarySearchTree;
+const BinarySearchTree = require("binary-search-tree").AVLTree;
 
 const pool = require("./db");
 
